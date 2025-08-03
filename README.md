@@ -5,19 +5,30 @@
 
 # Giới thiệu
 Đồ án này nhằm mục đích áp dụng thuật toán Otsu và thuật toán K-Means để thực hiện phân đoạn ảnh — một trong những bước cơ bản và quan trọng trong xử lý ảnh số.
+
 Otsu Thresholding: Dùng để tự động tìm ngưỡng tối ưu, phân tách đối tượng và nền trong ảnh xám, giúp làm nổi bật các chi tiết chính.
+
 K-Means Clustering: Dùng để phân nhóm các điểm ảnh của ảnh màu thành k cụm dựa trên sự tương đồng màu sắc, giúp đơn giản hóa ảnh hoặc tách các vùng màu đặc trưng.
+
 Mục tiêu:
+
 Làm rõ sự khác biệt giữa phương pháp phân ngưỡng đơn giản (Otsu) và phân đoạn dựa trên phân cụm (K-Means).
+
 Giúp sinh viên nắm vững các thao tác tiền xử lý, tách nền và nhận diện vùng quan trọng trong ảnh.
 
 # Công nghệ sử dụng
 Python: Ngôn ngữ lập trình chính.
+
 Pillow (PIL): Đọc ảnh và chuyển đổi sang ảnh xám.
+
 NumPy: Xử lý mảng số liệu ảnh.
+
 Scikit-Image: Tính ngưỡng Otsu tự động.
+
 Matplotlib: Hiển thị ảnh trực quan.
+
 OpenCV: Xử lý ảnh nâng cao và thao tác với webcam.
+
 scikit-learn: Thư viện thực hiện K-Means Clustering.
 
 # Chi tiết các phép biến đổi & công thức
