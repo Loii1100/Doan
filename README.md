@@ -34,6 +34,17 @@ Phân đoạn ảnh màu thành k cụm dựa trên sự tương đồng về m�
 Công thức:
 Tối ưu hàm mất mát:
 <img width="257" height="88" alt="image" src="https://github.com/user-attachments/assets/e56ddc15-f14c-4c85-a805-9629a34db120" />
+Dưới đây là ví dụ kết quả so sánh hai thuật toán trên ảnh tĩnh:
+ Đánh giá phân đoạn:
+ Otsu:
+  Thời gian: 0.0041 giây
+  SSIM: 0.7125
+  PSNR: 14.32 dB
+
+ K-Means (k=2):
+  Thời gian: 0.0532 giây
+  SSIM: 0.8247
+  PSNR: 16.85 dB
 
 So sánh
 1. Nguyên lý hoạt động
