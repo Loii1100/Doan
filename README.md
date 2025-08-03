@@ -50,8 +50,15 @@ Dưới đây là ví dụ kết quả so sánh hai thuật toán trên ảnh t�
 
 So sánh
 1. Nguyên lý hoạt động
-Otsu: Sử dụng histogram ảnh xám để tìm một ngưỡng duy nhất, chia ảnh thành 2 lớp (foreground & background).
-K-Means: Gom các pixel vào k cụm dựa trên sự tương đồng màu sắc (RGB), giúp chia ảnh thành nhiều vùng màu.
+Otsu Thresholding:
+Hoạt động trên ảnh xám (grayscale).
+Dựa vào histogram của ảnh, thuật toán tự động tìm ra một ngưỡng tối ưu (t) để chia ảnh thành 2 lớp: foreground (đối tượng) và background (nền).
+Phù hợp với các ảnh có histogram 2 đỉnh rõ rệt (đối tượng và nền phân biệt rõ màu sắc).
+K-Means Clustering:
+Áp dụng trên ảnh màu (RGB).
+Thuật toán phân nhóm các pixel vào k cụm dựa trên sự tương đồng về màu sắc (hoặc các đặc trưng khác như texture).
+Sau mỗi lần gán pixel vào cụm, tâm cụm được cập nhật cho đến khi hội tụ.
+Cho phép phân đoạn nhiều vùng (k cụm màu), không giới hạn 2 lớp như Otsu.
 2. Đầu vào và đầu ra
 Otsu:
 Đầu vào: Ảnh xám (grayscale).
