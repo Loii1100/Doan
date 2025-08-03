@@ -2,111 +2,67 @@
 # So sách thuật toán Otsu va thuật toán K-means
 ## Nhóm thực hiện: 09_NMXLA_HK242
 ## Giảng viên: Đỗ Hữu Quân
+
 Giới thiệu
-Đồ án này mở rộng việc áp dụng thuật toán Otsu và K-Means để thực hiện phân đoạn ảnh, nhưng nâng cao hơn so với phiên bản cơ bản trước đó:
-
-Với Otsu, thử nghiệm thêm các trường hợp ảnh bị làm mờ (blur), ảnh có nhiễu Gaussian, và phân ngưỡng đa mức (Multi-level Otsu).
-
-Với K-Means, áp dụng phân cụm không chỉ trên không gian RGB, mà còn thử nghiệm trên không gian HSV và kết hợp thêm tọa độ không gian (x, y) của pixel để tăng độ chính xác phân vùng.
-Mục tiêu chính:
-
-Đánh giá hiệu quả các kỹ thuật tiền xử lý (blur, noise) ảnh hưởng đến thuật toán Otsu.
-
-So sánh các biến thể của K-Means (RGB, HSV, RGB + tọa độ) để thấy sự khác biệt.
-
-Làm rõ giới hạn và ưu điểm của từng phương pháp trong phân đoạn ảnh màu phức tạp.
+Đồ án này nhằm mục đích áp dụng thuật toán Otsu và thuật toán K-Means để thực hiện phân đoạn ảnh — một trong những bước cơ bản và quan trọng trong xử lý ảnh số.
+Otsu Thresholding: Dùng để tự động tìm ngưỡng tối ưu, phân tách đối tượng và nền trong ảnh xám, giúp làm nổi bật các chi tiết chính.
+K-Means Clustering: Dùng để phân nhóm các điểm ảnh của ảnh màu thành k cụm dựa trên sự tương đồng màu sắc, giúp đơn giản hóa ảnh hoặc tách các vùng màu đặc trưng.
+Mục tiêu:
+Làm rõ sự khác biệt giữa phương pháp phân ngưỡng đơn giản (Otsu) và phân đoạn dựa trên phân cụm (K-Means).
+Giúp sinh viên nắm vững các thao tác tiền xử lý, tách nền và nhận diện vùng quan trọng trong ảnh.
 
 Công nghệ sử dụng
 Python: Ngôn ngữ lập trình chính.
-
-OpenCV (cv2): Đọc ảnh, xử lý màu sắc, làm mờ ảnh, thêm nhiễu Gaussian.
-
-NumPy: Xử lý dữ liệu ảnh dạng mảng.
-
-Matplotlib (pyplot): Hiển thị ảnh và kết quả trực quan.
-
-Scikit-Image (skimage.filters.threshold_multiotsu): Phân ngưỡng đa mức (Multi-level Otsu).
-
-Scikit-Learn (KMeans): Thực hiện thuật toán phân cụm K-Means.
+Pillow (PIL): Đọc ảnh và chuyển đổi sang ảnh xám.
+NumPy: Xử lý mảng số liệu ảnh.
+Scikit-Image: Tính ngưỡng Otsu tự động.
+Matplotlib: Hiển thị ảnh trực quan.
+OpenCV: Xử lý ảnh nâng cao và thao tác với webcam.
+scikit-learn: Thư viện thực hiện K-Means Clustering.
 
 Chi tiết các phép biến đổi & công thức
-1. Thuật toán Otsu (Nâng cao)
+Thuật toán Otsu (Otsu Thresholding)
 Mục đích:
-Tự động tìm ngưỡng phân chia ảnh thành foreground và background.
+Tự động tìm ngưỡng t sao cho phương sai giữa các lớp foreground và background được tối đa hóa, giúp tách đối tượng ra khỏi nền ảnh xám.
+Công thức:
+Otsu tìm t sao cho:
+<img width="417" height="66" alt="image" src="https://github.com/user-attachments/assets/287cec31-cc31-4080-8f9f-1bcc2fed5c6b" />
 
-Xử lý thêm các trường hợp: ảnh mờ, ảnh nhiễu, và phân nhiều lớp (multi-level).
-
-Công thức toán học:
-Giống như Otsu cơ bản, tìm ngưỡng t sao cho phương sai giữa các lớp là lớn nhất:
-
-σ<sub>b</sub><sup>2</sup>(t) = ω<sub>1</sub>(t) * ω<sub>2</sub>(t) * (μ<sub>1</sub>(t) - μ<sub>2</sub>(t))<sup>2</sup>
-
-Với Multi-level Otsu, ảnh được chia thành n lớp dựa trên n-1 ngưỡng.
-# Otsu cơ bản
-_, otsu_result = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-
-# Otsu sau khi làm mờ Gaussian
-blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-_, otsu_blur = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-
-# Multi-level Otsu (3 lớp)
-thresholds = threshold_multiotsu(gray, classes=3)
-multi_region = np.digitize(gray, bins=thresholds)
-
-# Otsu trên ảnh bị nhiễu Gaussian
-def add_gaussian_noise(img, mean=0, std=20):
-    noise = np.random.normal(mean, std, img.shape).astype(np.uint8)
-    return cv2.add(img, noise)
-
-gray_noisy = add_gaussian_noise(gray)
-_, otsu_noisy = cv2.threshold(gray_noisy, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-2. Thuật toán K-Means (Nâng cao)
+Thuật toán K-Means (K-Means Clustering)
 Mục đích:
-Phân cụm pixel dựa trên màu sắc RGB, HSV hoặc kết hợp tọa độ không gian (x, y).
-
-Xử lý tốt hơn với ảnh phức tạp, có nhiễu.
-
-Công thức toán học:
+Phân đoạn ảnh màu thành k cụm dựa trên sự tương đồng về màu sắc (RGB), giúp đơn giản hóa ảnh hoặc làm nổi bật các vùng màu đặc trưng.
+Công thức:
 Tối ưu hàm mất mát:
-J = Σ ||x<sub>i</sub> - μ<sub>k</sub>||²
-x<sub>i</sub>: Pixel (RGB hoặc HSV hoặc [RGB, x, y])
-μ<sub>k</sub>: Tâm cụm thứ k
+<img width="257" height="88" alt="image" src="https://github.com/user-attachments/assets/e56ddc15-f14c-4c85-a805-9629a34db120" />
 
-Các phương pháp thử nghiệm:
-K-Means trên RGB.
+So sánh
+1. Nguyên lý hoạt động
+Otsu: Sử dụng histogram ảnh xám để tìm một ngưỡng duy nhất, chia ảnh thành 2 lớp (foreground & background).
+K-Means: Gom các pixel vào k cụm dựa trên sự tương đồng màu sắc (RGB), giúp chia ảnh thành nhiều vùng màu.
+2. Đầu vào và đầu ra
+Otsu:
+Đầu vào: Ảnh xám (grayscale).
+Đầu ra: Ảnh nhị phân (đen trắng).
+K-Means:
+Đầu vào: Ảnh màu (RGB).
+Đầu ra: Ảnh phân đoạn với k màu đại diện.
+3. Ưu điểm
+Otsu:
+Nhanh, đơn giản, không cần tham số nhiều.
+Hiệu quả với ảnh có histogram 2 đỉnh rõ ràng.
+K-Means:
+Phân đoạn ảnh màu đa vùng.
+Kết quả phân cụm màu chi tiết hơn.
+4. Nhược điểm
+Otsu:
+Chỉ tách được 2 lớp.
+Không phù hợp với ảnh màu hoặc ảnh phức tạp.
+K-Means:
+Chậm hơn (phải lặp nhiều lần).
+Cần xác định trước số cụm k.
 
-K-Means trên HSV (chuyển ảnh sang không gian màu HSV).
 
-K-Means kết hợp [R, G, B, x, y] để tăng độ chính xác biên vùng.
-# KMeans RGB
-def segment_rgb_kmeans(img, k):
-    pixel_values = img.reshape((-1, 3))
-    kmeans = KMeans(n_clusters=k, n_init='auto')
-    labels = kmeans.fit_predict(pixel_values)
-    centers = np.uint8(kmeans.cluster_centers_)
-    segmented = centers[labels.flatten()].reshape(img.shape)
-    return segmented
 
-# KMeans HSV
-def segment_hsv_kmeans(img, k):
-    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    pixel_values = hsv.reshape((-1, 3))
-    kmeans = KMeans(n_clusters=k, n_init='auto')
-    labels = kmeans.fit_predict(pixel_values)
-    centers = np.uint8(kmeans.cluster_centers_)
-    segmented = centers[labels.flatten()].reshape(img.shape)
-    return segmented
 
-# KMeans RGB + tọa độ
-def segment_with_position(img, k):
-    h, w, c = img.shape
-    features = np.zeros((h * w, 5), dtype=np.float32)
-    for i in range(h):
-        for j in range(w):
-            pixel = img[i, j]
-            features[i * w + j] = np.array([pixel[0], pixel[1], pixel[2], i / h, j / w])
-    kmeans = KMeans(n_clusters=k, n_init='auto')
-    labels = kmeans.fit_predict(features)
-    centers = np.uint8(kmeans.cluster_centers_[:, :3])
-    segmented = centers[labels.flatten()].reshape(img.shape)
-    return segmented
+
+
