@@ -37,6 +37,7 @@ Mục đích:
 Tự động tìm ngưỡng t sao cho phương sai giữa các lớp foreground và background được tối đa hóa, giúp tách đối tượng ra khỏi nền ảnh xám.
 Công thức:
 Otsu tìm t sao cho:
+
 <img width="417" height="66" alt="image" src="https://github.com/user-attachments/assets/287cec31-cc31-4080-8f9f-1bcc2fed5c6b" />
 
 Thuật toán K-Means (K-Means Clustering)
